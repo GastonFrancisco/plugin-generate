@@ -107,41 +107,50 @@ sf plugins
 
 <!-- commands -->
 
+-   [`sf generate fields`](#sf-generate-fields)
 -   [`sf hello world`](#sf-hello-world)
 
-## `sf hello world`
+## `sf generate fields`
 
-Say hello.
+Parse your CustomFields.
 
 ```
 USAGE
-  $ sf hello world [--json] [--flags-dir <value>] [-n <value>]
+  $ sf generate fields -p <value> -e <value> -s <value> [--json] [--flags-dir <value>]
 
 FLAGS
-  -n, --name=<value>  [default: World] The name of the person you'd like to say hello to.
+  -e, --encoding=<value>  (required) Encoding of the csv
+  -p, --path=<value>      (required) The path of the csv file you would like to parse.
+  -s, --project=<value>   (required) Salesforce Project path.
 
 GLOBAL FLAGS
   --flags-dir=<value>  Import flag values from a directory.
   --json               Format output as json.
 
 DESCRIPTION
-  Say hello.
+  Parse your CustomFields.
 
-  Say hello either to the world or someone you know.
+  Parse your fields by providing a csv file and a folder with xml files will be created.
 
 EXAMPLES
   Say hello to the world:
 
-    $ sf hello world
+    $ sf generate fields
 
   Say hello to someone you know:
 
-    $ sf hello world --name Astro
+    $ sf generate fields --name Astro
 
 FLAG DESCRIPTIONS
-  -n, --name=<value>  The name of the person you'd like to say hello to.
+  -e, --encoding=<value>  Encoding of the csv
 
-    This person can be anyone in the world!
+    The encoding of the csv file to parse.
+
+  -p, --path=<value>  The path of the csv file you would like to parse.
+
+    This path should lead to a csv file.
+
+  -s, --project=<value>  Salesforce Project path.
+
+    This path should lead to a folder/directory containing a Salesforce Project.
 ```
-
-<!-- commandsstop -->
