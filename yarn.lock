@@ -83,9 +83,9 @@
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cloudfront@^3.675.0":
+"@aws-sdk/client-cloudfront@^3.679.0":
   version "3.679.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-cloudfront/-/client-cloudfront-3.679.0.tgz"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cloudfront/-/client-cloudfront-3.679.0.tgz#8062cc1cf25897306478ff7f44cb050bfd8cc283"
   integrity sha512-C/k3ZP+K47CAWICCkaXleUJGdJCiEJRB+5XvbEpoCabrrRJDCa+x/qbgS0KfTuioS5gYb9V1DWeUfXD+iWaoCw==
   dependencies:
     "@aws-crypto/sha256-browser" "5.2.0"
@@ -1217,7 +1217,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@oclif/core@^4", "@oclif/core@^4.0.27", "@oclif/core@^4.0.29":
+"@oclif/core@^4", "@oclif/core@^4.0.27", "@oclif/core@^4.0.30":
   version "4.0.30"
   resolved "https://registry.npmjs.org/@oclif/core/-/core-4.0.30.tgz"
   integrity sha512-Ak3OUdOcoovIRWZOT6oC5JhZgyJD90uWX/7HjSofn+C4LEmHxxfiyu04a73dwnezfzqDu9jEXfd2mQOOC54KZw==
@@ -1273,21 +1273,43 @@
     ansis "^3.3.1"
     fast-levenshtein "^3.0.0"
 
-"@oclif/plugin-warn-if-update-available@^3.1.11":
-  version "3.1.11"
-  resolved "https://registry.npmjs.org/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-3.1.11.tgz"
-  integrity sha512-Pv4EFxhpzspq0n2v0cdfqRwIMwYyd3YOIKny/1Ao71D0pKlpxJ63c9OFDNJAJcUjFOUHzODTtXXNwimOpzfbYg==
+"@oclif/plugin-warn-if-update-available@^3.1.20":
+  version "3.1.20"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-3.1.20.tgz#2ac90286a0b59860c66956c37a74b27f2a4e78d0"
+  integrity sha512-gvovUQXwWkQZzHG7WknLq+yoSe61Cbv45rEUooKbzo7tfRDChFnCyLQ+OCCldQOsSYvS/KTsiawyyCetSaCR1g==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.3.1"
     debug "^4.3.5"
     http-call "^5.2.2"
     lodash "^4.17.21"
+    registry-auth-token "^5.0.2"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
+
+"@pnpm/config.env-replace@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@pnpm/config.env-replace/-/config.env-replace-1.1.0.tgz#ab29da53df41e8948a00f2433f085f54de8b3a4c"
+  integrity sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==
+
+"@pnpm/network.ca-file@^1.0.1":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@pnpm/network.ca-file/-/network.ca-file-1.0.2.tgz#2ab05e09c1af0cdf2fcf5035bea1484e222f7983"
+  integrity sha512-YcPQ8a0jwYU9bTdJDpXjMi7Brhkr1mXsXrUJvjqM2mQDgkRiz8jFaQGOdaLxgjtUfQgZhKy/O3cG/YwmgKaxLA==
+  dependencies:
+    graceful-fs "4.2.10"
+
+"@pnpm/npm-conf@^2.1.0":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@pnpm/npm-conf/-/npm-conf-2.3.1.tgz#bb375a571a0bd63ab0a23bece33033c683e9b6b0"
+  integrity sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==
+  dependencies:
+    "@pnpm/config.env-replace" "^1.1.0"
+    "@pnpm/network.ca-file" "^1.0.1"
+    config-chain "^1.1.11"
 
 "@salesforce/cli-plugins-testkit@^5.3.35":
   version "5.3.35"
@@ -2931,6 +2953,14 @@ concat-map@0.0.1:
   resolved "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
+config-chain@^1.1.11:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/config-chain/-/config-chain-1.1.13.tgz#fad0795aa6a6cdaff9ed1b68e9dff94372c232f4"
+  integrity sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==
+  dependencies:
+    ini "^1.3.4"
+    proto-list "~1.2.1"
+
 constant-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/constant-case/-/constant-case-3.0.4.tgz"
@@ -4111,6 +4141,11 @@ got@^13:
     lowercase-keys "^3.0.0"
     p-cancelable "^3.0.0"
     responselike "^3.0.0"
+
+graceful-fs@4.2.10:
+  version "4.2.10"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
+  integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
 graceful-fs@^4.1.15, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4:
   version "4.2.11"
@@ -5517,20 +5552,20 @@ object.values@^1.1.7:
     define-properties "^1.2.0"
     es-abstract "^1.22.1"
 
-oclif@^4.15.12:
-  version "4.15.12"
-  resolved "https://registry.npmjs.org/oclif/-/oclif-4.15.12.tgz"
-  integrity sha512-L1D7dM6nEA+6QZSm+h7qfN7jLF19eOopCE8bs5V4Hmj002c2i4vw41rSL95yaUaLYM6kDlCEsJhgs+gC2wVsiA==
+oclif@^4.15.15:
+  version "4.15.15"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.15.15.tgz#dd5e586a4bd9be495d5bf11c3bc11e59fdc22b0a"
+  integrity sha512-AhuSSQ9gW+g3C86hdTHYBWKGknE/q0puFHsEcQTeCPS+NfTXSefmEUowE7QWAx8CkrdYDpJY/sOWXrK3FJEqFQ==
   dependencies:
-    "@aws-sdk/client-cloudfront" "^3.675.0"
+    "@aws-sdk/client-cloudfront" "^3.679.0"
     "@aws-sdk/client-s3" "^3.676.0"
     "@inquirer/confirm" "^3.1.22"
     "@inquirer/input" "^2.2.4"
     "@inquirer/select" "^2.5.0"
-    "@oclif/core" "^4.0.29"
+    "@oclif/core" "^4.0.30"
     "@oclif/plugin-help" "^6.2.14"
     "@oclif/plugin-not-found" "^3.2.21"
-    "@oclif/plugin-warn-if-update-available" "^3.1.11"
+    "@oclif/plugin-warn-if-update-available" "^3.1.20"
     async-retry "^1.3.3"
     chalk "^4"
     change-case "^4"
@@ -5873,6 +5908,11 @@ proper-lockfile@^4.1.2:
     retry "^0.12.0"
     signal-exit "^3.0.2"
 
+proto-list@~1.2.1:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
+  integrity sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==
+
 psl@^1.1.33:
   version "1.9.0"
   resolved "https://registry.npmjs.org/psl/-/psl-1.9.0.tgz"
@@ -6025,6 +6065,13 @@ regexp.prototype.flags@^1.5.1:
     call-bind "^1.0.2"
     define-properties "^1.2.0"
     set-function-name "^2.0.0"
+
+registry-auth-token@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/registry-auth-token/-/registry-auth-token-5.0.2.tgz#8b026cc507c8552ebbe06724136267e63302f756"
+  integrity sha512-o/3ikDxtXaA59BmZuZrJZDJv8NMDGSj+6j6XaeBmHw8eY1i1qd9+6H+LjVvQXx3HN6aRCGa1cUdJ9RaJZUugnQ==
+  dependencies:
+    "@pnpm/npm-conf" "^2.1.0"
 
 regjsparser@^0.10.0:
   version "0.10.0"
