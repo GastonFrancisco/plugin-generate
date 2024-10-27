@@ -11,4 +11,7 @@ module.exports = {
 		'plugin:sf-plugin/recommended',
 	],
 	root: true,
+	rules: {
+		'@typescript-eslint/strict-boolean-expressions': 'warn',
+	},
 };
