@@ -13,11 +13,12 @@ import { Messages } from '@salesforce/core';
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-generate', 'generate.fields');
 
+// this "Result" is used in the test files for the command
 export type GenerateResult = {
 	// path: string;
 	// encoding: string;
 	// project: string;
-	parsedCSV: string;
+	parsedCSV: CustomField[];
 };
 
 export default class Generate extends SfCommand<GenerateResult> {
@@ -48,129 +49,19 @@ export default class Generate extends SfCommand<GenerateResult> {
 
 	public async run(): Promise<GenerateResult> {
 		const { flags } = await this.parse(Generate);
-		const data = fs.readFileSync(flags.path, 'utf-8');
 
-		// Split data into rows
-		const rows = data
-			.split('\n')
-			.map((row) => row.trim())
-			.filter(Boolean);
+		const customFields: CustomField[] = parse<CustomField>(fs.readFileSync(flags.path, 'utf-8'));
 
-		this.log('Fields: ' + JSON.stringify(rows.length - 1));
+		const members: string[] = feedCustomFieldMetadata(
+			JSON.parse(JSON.stringify(customFields)) as CustomField[],
+			flags.project
+		);
 
-		// Get columns from the first row (assuming CSV format)
-		const columns: [keyof CustomField] = rows[0].split(',') as [keyof CustomField];
-
-		const packageXML: Package = {
-			$: { xmlns: 'http://soap.sforce.com/2006/04/metadata' },
-			types: [],
-			version: 51.0, // Should be flag value
-		};
-
-		const members: string[] = [];
-
-		const types: PackageTypeMembers = {
-			members: [],
-			name: PackageTypeMemberNames.CustomField,
-		};
-
-		// Loop through the remaining rows (starting from the second row)
-		for (let i = 1; i < rows.length; i++) {
-			// CustomField xml structure as an object that we'll pass on to xml2js.builder
-			const customField: CustomField = {
-				$: { xmlns: 'http://soap.sforce.com/2006/04/metadata' },
-			};
-
-			const builder = new xml2js.Builder();
-
-			let sobject: string = '';
-
-			let defaultValue: string = '';
-
-			const rowValues: CustomFieldType[] = rows[i].split(','); // Split each row into values
-
-			// Assign each value to the corresponding column in the customFieldXML
-			for (let j = 0; j < columns.length; j++) {
-				const columnName: keyof CustomField = columns[j];
-
-				const rowValue: CustomFieldType = rowValues[j];
-
-				if (columnName === 'sObject') {
-					sobject = rowValue as string;
-					continue;
-				}
-
-				if (!(rowValue === '')) {
-					if (columnName === 'valueSet') {
-						const stringRowValue: string = rowValue as string;
-
-						const restricted: boolean = stringRowValue.split('<')[0].toLowerCase() === 'true';
-						const sorted: boolean = stringRowValue.split('<')[1].toLowerCase() === 'true';
-
-						const valueSetDefinition: ValueSetDefinition = {
-							sorted,
-							value: [],
-						};
-
-						const valueSet: ValueSet = {
-							restricted,
-							valueSetDefinition,
-						};
-
-						defaultValue = stringRowValue.split('<')[2];
-
-						for (const labelAPIPair of stringRowValue.split('<')[3].split(';')) {
-							const value: Value = {
-								fullName: labelAPIPair.split('|')[1],
-								default: false,
-								label: labelAPIPair.split('|')[0],
-							};
-
-							if (defaultValue === value.fullName) {
-								value.default = true;
-							}
-
-							valueSet.valueSetDefinition.value.push(value);
-						}
-
-						customField[columnName] = valueSet;
-					} else {
-						customField[columnName] = rowValue as undefined;
-					}
-				}
-			}
-
-			members.push(sobject + '.' + customField.fullName);
-
-			types.members = members;
-
-			const xml = builder.buildObject({ CustomField: customField });
-
-			fs.mkdirSync(flags.project + '\\force-app\\main\\default\\objects\\' + sobject + '\\fields', {
-				recursive: true,
-			});
-			fs.writeFileSync(
-				flags.project +
-					'\\force-app\\main\\default\\objects\\' +
-					sobject +
-					'\\fields\\' +
-					customField.fullName +
-					'.field-meta.xml',
-				xml
-			);
-		}
-
-		packageXML.types.push(types);
-
-		const builder = new xml2js.Builder();
-		const xml = builder.buildObject({ Package: packageXML });
-
-		fs.mkdirSync(flags.project + '\\manifest\\', { recursive: true });
-		fs.writeFileSync(flags.project + '\\manifest\\' + 'generated_package.xml', xml);
+		feedPackage(members, PackageTypeMemberNames.CustomField, flags.project);
 
 		this.log(messages.getMessage('info.fields', [flags.path, flags.encoding, flags.project]));
 		return {
-			parsedCSV: data,
+			parsedCSV: customFields,
 			// path: flags.path,
 			// encoding: flags.encoding,
 		};
@@ -187,8 +78,7 @@ type CustomField = {
 };
 */
 
-type CustomFieldType = CustomField[keyof CustomField];
-
+// TODO run validations when mdObject is of type CustomField.(ask for certain columns depending on field type)
 type CustomField = {
 	$?: $;
 	businessOwnerGroup?: string;
@@ -238,7 +128,7 @@ type CustomField = {
 	required?: boolean;
 	scale?: number;
 	securityClassification?: SecurityClassification;
-	sObject?: string;
+	sobject?: string;
 	startingNumber?: number;
 	stripMarkup?: boolean;
 	summarizedField?: string;
@@ -437,3 +327,114 @@ enum PackageTypeMemberNames {
 type $ = {
 	xmlns: string;
 };
+
+enum TypesToParse {
+	valueSet = 'valueSet',
+}
+
+// ?-----------------------------------------------------------------------------------------------//
+// ?                                          FUNCTIONS                                            //
+// ?                                                                                               //
+// ?-----------------------------------------------------------------------------------------------//
+
+export function parse<mdType>(data: string): mdType[] {
+	// TODO check if headers is in list of keyof types
+	const headers: string[] = data.split('\r')[0].split(';');
+
+	headers.forEach((header) => {
+		header.trim();
+	});
+
+	const rows: string[] = data.split('\r\n').slice(1, data.split('\r').length - 2);
+
+	const mdObjectList: mdType[] = [] as mdType[];
+
+	for (const [i, row] of rows.entries()) {
+		const mdObject: mdType = {} as mdType;
+
+		mdObject['$' as keyof mdType] = { xmlns: 'http://soap.sforce.com/2006/04/metadata' } as mdType[keyof mdType];
+
+		for (const [j, value] of row.split(';').entries()) {
+			const header: keyof mdType = headers[j].trim() as keyof mdType;
+
+			// TODO Enum should be used instead of 'valueSet' so it bypasses certain types.
+			// TODO That is going to give the opportunity to call for the right function outside of the loop.
+			// TODO In the meantime cast those values as strings.
+			if (value) {
+				try {
+					if (!(header in TypesToParse)) {
+						mdObject[header] = value.trim() as mdType[keyof mdType];
+					} else if (header in TypesToParse) {
+						const formattedJSON: string = value
+							.replaceAll('""', '?')
+							.replaceAll('"', '')
+							.replaceAll('?', '"');
+
+						mdObject[header] = JSON.parse(formattedJSON) as mdType[keyof mdType];
+					}
+				} catch (e) {
+					// TODO store error messages with codes an such
+					throw new Error(
+						`There is an unresolved issue with the value at index ${i + 2}, column ${header as string} → ${
+							e as string
+						}`
+					);
+				}
+			}
+		}
+
+		mdObjectList.push(mdObject);
+	}
+
+	return mdObjectList;
+}
+
+export function feedCustomFieldMetadata(customFields: CustomField[], project: string): string[] {
+	const memberNames: string[] = [];
+
+	for (const customField of customFields) {
+		// Check sobject from customField here since now its a optional attribute. If it's null then throw error. Index could also be stored in the table to help the user.
+
+		const sObject: string = customField.sobject as string;
+
+		delete customField.sobject;
+
+		const builder = new xml2js.Builder();
+
+		memberNames.push(sObject + '.' + customField.fullName);
+
+		const xml = builder.buildObject({ CustomField: customField });
+
+		fs.mkdirSync(project + '\\force-app\\main\\default\\objects\\' + sObject + '\\fields', { recursive: true });
+		fs.writeFileSync(
+			project +
+				'\\force-app\\main\\default\\objects\\' +
+				sObject +
+				'\\fields\\' +
+				customField.fullName +
+				'.field-meta.xml',
+			xml
+		);
+	}
+
+	return memberNames;
+}
+
+export function feedPackage(members: string[], packageTypeMemberName: PackageTypeMemberNames, project: string): void {
+	const packageXML: Package = {
+		$: { xmlns: 'http://soap.sforce.com/2006/04/metadata' },
+		types: [
+			{
+				members,
+				name: packageTypeMemberName,
+			},
+		],
+		version: 62.0, // Should be flag value
+	};
+
+	fs.mkdirSync(project + '\\manifest\\', { recursive: true });
+	fs.writeFileSync(
+		project + '\\manifest\\' + 'generated_package.xml',
+		new xml2js.Builder().buildObject({ Package: packageXML })
+	);
+}
